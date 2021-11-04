@@ -1,0 +1,15 @@
+{
+  "name": "litespeed-conf",
+  "version": "1.0.0",
+  "description": "Module for interacting with LiteSpeed config file",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": {
+    "email": "bagaswh@protonmail.com",
+    "name": "Bagas Wahyu Hidayah",
+    "url": "https://github.com/bagaswh/litespeed-conf"
+  },
+  "license": "MIT"
+}
