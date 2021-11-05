@@ -1,3 +1,7 @@
+const NodeIdentifiers = {
+  ROOT: Symbol('RootNode'),
+};
+
 class ParserError extends Error {
   constructor(message, args) {
     super(message);
@@ -8,28 +12,133 @@ class ParserError extends Error {
 }
 
 class ParseTreeNode {
-  constructor(key, value, parent, children = []) {
+  constructor(key, value, parent, children = [], isRoot = false) {
     this.key = key;
     this.value = value;
     this.parent = parent;
     this.children = children;
     this.isBlock = !!children.length;
+    this.isRoot = isRoot;
+  }
+
+  get(key, value) {
+    let nodeFound = null;
+    this.traverse(this, 'dfs', (node) => {
+      if (key == NodeIdentifiers.ROOT) {
+        if (this.isRoot) {
+          nodeFound = this;
+          return false;
+        } else if (node.isRoot == true) {
+          nodeFound = node;
+          return false;
+        }
+        return true;
+      }
+
+      if (node.key == key && (value ? value == node.value : true)) {
+        nodeFound = node;
+        return false;
+      }
+      return true;
+    });
+    return nodeFound;
+  }
+
+  remove(key, value) {
+    this.traverse(this, 'dfs', (node) => {
+      if (node.key == key && (value ? value == node.value : true)) {
+        const nodeIndex = node.parent.children.findIndex(
+          (node) => node.key == key && (value ? value == node.value : true)
+        );
+        if (nodeIndex > -1) {
+          node.parent.children.splice(nodeIndex, 1);
+        }
+        return false;
+      }
+      return true;
+    });
   }
 
   addChild(child) {
     this.children.push(child);
     child.parent = this;
+    child.isRoot = false;
   }
 
-  walk(root = null, cb) {
-    if (!this.children.length) {
-      return;
+  traverseBfs(root, cb) {
+    const queue = [{ node: root || this, depth: 0 }];
+    let n;
+
+    while (queue.length > 0) {
+      n = queue.shift();
+      cb(n.node, n.depth);
+
+      if (!n.node.children) {
+        continue;
+      }
+
+      for (let i = 0; i < n.node.children.length; i++) {
+        queue.push({ node: n.node.children[i], depth: n.depth + 1 });
+      }
     }
-    const children = (root ? root.children : this.children) || [];
-    for (const child of children) {
-      cb(child);
-      this.walk(child, cb);
+  }
+
+  traverseDfs(root, cb) {
+    const stack = [{ node: root || this, depth: 0 }];
+    let n;
+
+    while (stack.length > 0) {
+      n = stack.pop();
+      cb(n.node, n.depth);
+
+      if (!n.node.children) {
+        continue;
+      }
+
+      for (var i = n.node.children.length - 1; i >= 0; i--) {
+        stack.push({ node: n.node.children[i], depth: n.depth + 1 });
+      }
     }
+  }
+
+  traverse(root = null, method = 'bfs', cb) {
+    if (method == 'bfs') {
+      return this.traverseBfs(root, cb);
+    } else if (method == 'dfs') {
+      return this.traverseDfs(root, cb);
+    }
+    throw new Error(`Invalid method ${method}.`);
+  }
+
+  toString() {
+    let str = '';
+    let insideBlock = false;
+    let insideBlockUntil = 0;
+    let blockLinesCount = 0;
+    this.traverse(undefined, 'dfs', (node, depth) => {
+      if (insideBlock) {
+        blockLinesCount++;
+      }
+      str += (depth > 1 ? ' '.repeat(depth) : '') + `${node.key} ${node.value}`;
+      if (node.isBlock) {
+        insideBlock = true;
+        insideBlockUntil = node.children.length;
+        str += ' {';
+        str += '\n';
+        return;
+      }
+      if (!node.isBlock && insideBlock && blockLinesCount == insideBlockUntil) {
+        insideBlock = false;
+        blockLinesCount = 0;
+        str += '\n}';
+        str += '\n';
+        return;
+      }
+      if (!node.isRoot) {
+        str += '\n';
+      }
+    });
+    return str;
   }
 }
 
@@ -43,7 +152,7 @@ class LiteSpeedConfigParser {
 
   parse() {
     this.index = 0;
-    this.tree = new ParseTreeNode('', '', null);
+    this.tree = new ParseTreeNode('', '', null, [], true);
     this.context = new ParseTreeNode('', '', this.tree);
 
     do {
@@ -157,4 +266,9 @@ function toArray(thing) {
   return [thing];
 }
 
-module.exports = { LiteSpeedConfigParser, ParseTreeNode, ParserError };
+module.exports = {
+  LiteSpeedConfigParser,
+  ParseTreeNode,
+  ParserError,
+  NodeIdentifiers,
+};
