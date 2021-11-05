@@ -43,8 +43,8 @@ class LiteSpeedConfigParser {
 
   parse() {
     this.index = 0;
-    this.tree = new ParseTreeNode("", "", null);
-    this.context = new ParseTreeNode("", "", this.tree);
+    this.tree = new ParseTreeNode('', '', null);
+    this.context = new ParseTreeNode('', '', this.tree);
 
     do {
       this.parseNext();
@@ -65,81 +65,96 @@ class LiteSpeedConfigParser {
   parseNext() {
     const c = this.source[this.index];
 
-    switch (c) {
-      case "{":
-      case "\n":
-      case "\r": {
-        const keyTrimmed = this.context.key.trim();
-        const valueTrimmed = this.context.value.trim();
-        if (!keyTrimmed.length && !valueTrimmed.length) {
-          this.index++;
-          return;
-        }
-
-        this.context.key = keyTrimmed;
-        this.context.value = valueTrimmed;
-
-        this.context.parent.addChild(this.context);
-
-        if (c == "{") {
-          this.context.isBlock = true;
-        }
-
-        this.context = new ParseTreeNode(
-          "",
-          "",
-          this.context.isBlock ? this.context : this.context.parent
-        );
-        break;
-      }
-      case "}":
-        this.context = new ParseTreeNode("", "", this.context.parent.parent);
-        break;
-      default: {
-        const word = this.readWord();
-        if (word !== null) {
-          if (!this.context.key) {
-            this.context.key = word.trim();
-          } else {
-            this.context.value += word;
-          }
-        } else {
-          this.index++;
-        }
+    if (c == '{' || c == '\n' || c == '\r') {
+      this.setContext(c);
+    } else if (c == '}') {
+      this.context = new ParseTreeNode('', '', this.context.parent.parent);
+      this.index++;
+    } else {
+      const word = this.readWord();
+      if (!word.length) {
         return;
       }
+      if (!this.context.key) {
+        this.context.key = word;
+      } else {
+        this.context.value += word;
+      }
     }
+
+    if (this.index == this.source.length) {
+      this.setContext(c);
+    }
+  }
+
+  setContext(c) {
+    const keyTrimmed = this.context.key.trim();
+    const valueTrimmed = this.context.value.trim();
+    if (!keyTrimmed.length && !valueTrimmed.length) {
+      this.index++;
+      return;
+    }
+
+    this.context.key = keyTrimmed;
+    this.context.value = valueTrimmed;
+
+    this.context.parent.addChild(this.context);
+
+    if (c == '{') {
+      this.context.isBlock = true;
+    }
+
+    if (this.index < this.source.length) {
+      this.context = new ParseTreeNode(
+        '',
+        '',
+        this.context.isBlock ? this.context : this.context.parent
+      );
+    }
+
     this.index++;
   }
 
   readWord() {
-    const substring = this.source.substring(this.index);
-    if (!substring.trim().length) {
-      this.index += substring.length;
+    let word = '';
+    const terminationTokens = ['`', ' ', '{', '}', '\n', '\r'];
+    word += this.readUntil(terminationTokens);
+    if (!word.trim().length) {
+      return this.readWord();
     }
-    let result = /^(.+?)[\s;{}'"]/.exec(this.source.substring(this.index));
-    if (!result) {
-      throw this.createError("Invalid line.");
+    const last = word[word.length - 1];
+    if (terminationTokens.slice(2).includes(last)) {
+      word = word.slice(0, word.length - 1);
+      this.index--;
     }
-    let word = result[1];
-    this.index += word.length;
-    if (word[word.length - 1] == "`") {
-      // eslint-disable-next-line no-constant-condition
-      while (true) {
-        const c = this.source[this.index];
-        word += c;
-        if (c == "`") {
-          this.index++;
-          break;
-        }
-        if (this.index == this.source.length - 1) {
-          throw this.createError("Unterminated literal block.");
-        }
-        this.index++;
-      }
+    if (word[word.length - 1] == '`') {
+      word += this.readUntil('`');
     }
     return word;
   }
+
+  readUntil(terminationChars) {
+    terminationChars = toArray(terminationChars);
+    let str = '';
+    // eslint-disable-next-line no-constant-condition
+    while (this.index < this.source.length) {
+      const c = this.source[this.index];
+      str += c;
+      if (terminationChars.includes(c)) {
+        this.index++;
+        break;
+      }
+      this.index++;
+    }
+    return str;
+  }
+}
+
+function toArray(thing) {
+  if (Array.isArray(thing)) {
+    return thing;
+  }
+  return [thing];
 }
 
 module.exports = { LiteSpeedConfigParser, ParseTreeNode, ParserError };
