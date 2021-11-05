@@ -11,5 +11,8 @@
     "name": "Bagas Wahyu Hidayah",
     "url": "https://github.com/bagaswh/litespeed-conf"
   },
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^8.1.0"
+  }
 }
