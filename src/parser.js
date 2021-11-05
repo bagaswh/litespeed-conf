@@ -71,7 +71,10 @@ class ParseTreeNode {
 
     while (queue.length > 0) {
       n = queue.shift();
-      cb(n.node, n.depth);
+      const cbRet = cb(n.node, n.depth);
+      if (cbRet === false) {
+        return;
+      }
 
       if (!n.node.children) {
         continue;
@@ -89,7 +92,10 @@ class ParseTreeNode {
 
     while (stack.length > 0) {
       n = stack.pop();
-      cb(n.node, n.depth);
+      const cbRet = cb(n.node, n.depth);
+      if (cbRet === false) {
+        return;
+      }
 
       if (!n.node.children) {
         continue;
