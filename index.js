@@ -1,3 +1,6 @@
+const { LiteSpeedConfigParser } = require('./src/parser');
+
 module.exports = {
-  LiteSpeedConfigParser: require("./src/LiteSpeedConfigParser"),
+  LiteSpeedConfigParser,
+  LiteSpeedConf: require('./src/conf').LiteSpeedConf,
 };
