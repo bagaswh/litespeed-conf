@@ -63,6 +63,8 @@ class ParseTreeNode {
     this.children.push(child);
     child.parent = this;
     child.isRoot = false;
+    this.isBlock = true && !this.isRoot;
+    return child;
   }
 
   traverseBfs(root, cb) {
@@ -251,7 +253,6 @@ class LiteSpeedConfigParser {
   readUntil(terminationChars) {
     terminationChars = toArray(terminationChars);
     let str = '';
-    // eslint-disable-next-line no-constant-condition
     while (this.index < this.source.length) {
       const c = this.source[this.index];
       str += c;

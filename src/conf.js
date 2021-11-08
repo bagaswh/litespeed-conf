@@ -1,4 +1,5 @@
 const { LiteSpeedConfigParser, ParseTreeNode } = require('./parser');
+const { isObject } = require('./utils');
 
 class Conf {
   constructor(node) {
@@ -11,8 +12,15 @@ class Conf {
     return this;
   }
 
-  add(key, value) {
-    this.node.addChild(new ParseTreeNode(key, value, this, []));
+  add(key, value, children) {
+    const block = this.node.addChild(new ParseTreeNode(key, value, this.node));
+    if (isObject(children)) {
+      for (const key in children) {
+        block.addChild(new ParseTreeNode(key, children[key], this.node));
+      }
+      return this;
+    }
+    return this;
   }
 
   remove(key, value) {
