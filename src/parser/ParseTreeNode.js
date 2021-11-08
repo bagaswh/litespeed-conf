@@ -109,40 +109,38 @@ class ParseTreeNode {
 
   toString() {
     let str = '';
-    let blockStack = [];
+    const blockStack = [];
+    let lastDepth = -1;
+    let pad = '';
     this.traverse(undefined, 'dfs', (node, depth) => {
+      pad = depth > 0 ? ' '.repeat(depth) : '';
+      if (lastDepth != -1 && depth < lastDepth) {
+        blockStack.pop();
+        str += '\n';
+        str += pad + '}';
+      }
+      lastDepth = depth;
       let currentBlock = blockStack[blockStack.length - 1];
       if (currentBlock) {
         currentBlock.currentLine++;
       }
-      const pad = depth > 1 ? ' '.repeat(depth) : '';
+      if (!node.isRoot) {
+        str += '\n';
+      }
       str += pad + `${node.key} ${node.value}`;
       if (node.isBlock) {
         blockStack.push({ totalLines: node.children.length, currentLine: 0 });
         str += ' {';
-        str += '\n';
         if (!node.children.length) {
-          str += '\n';
-          str += pad + '}';
-          str += '\n';
+          str += '}';
+          blockStack.pop();
         }
-        return;
-      }
-      if (
-        !node.isBlock &&
-        currentBlock &&
-        currentBlock.currentLine == currentBlock.totalLines
-      ) {
-        blockStack.pop();
-        str += '\n';
-        str += '}';
-        str += '\n';
-        return;
-      }
-      if (!node.isRoot) {
-        str += '\n';
       }
     });
+    if (blockStack.length) {
+      // close the last block
+      str += '\n' + pad.slice(0, pad.length - 1) + '}';
+    }
     return str;
   }
 }

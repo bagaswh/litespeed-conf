@@ -30,7 +30,6 @@ context /bank-indonesia {
 
   phpIniOverride  {
   }
-
 }
 
 rewrite  {
@@ -40,20 +39,15 @@ rewrite  {
 
 const litespeedConf = new LiteSpeedConf(config);
 
-/* let conf = litespeedConf.get('rewrite');
+let conf = litespeedConf.conf;
 conf.add('foo', 'bar');
-
-conf = litespeedConf.get('listener', 'Default');
 conf.add('me', 'and who');
-
-conf = litespeedConf.get(NodeIdentifiers.ROOT);
 conf.add('something', 'in the matter', {
   key: 'apa',
   foo: 'bar',
   oke: 'bange',
 });
-
-conf.add('nonsens', 'just non sense'); */
+conf.add('nonsens', 'just non sense');
 
 // console.log();
 const parsedToString = litespeedConf.toString();

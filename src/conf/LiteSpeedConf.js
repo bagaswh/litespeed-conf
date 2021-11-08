@@ -6,13 +6,14 @@ class LiteSpeedConf {
     this.config = config;
     this.tree = null;
     this.parse();
+    this.conf = new Conf(this.tree);
   }
 
   parse() {
     this.tree = new LiteSpeedConfigParser(this.config).parse();
   }
 
-  get(key, value) {
+  getConf(key, value) {
     const node = this.tree.get(key, value);
     if (node !== null) {
       return new Conf(node);
