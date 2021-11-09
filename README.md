@@ -112,4 +112,4 @@ context /baz {
 }
 ```
 
-Yes that newline in the first line is a bug, I think. I'll fix it, I guess.
+Yes that newline in the first line is a bug. I'll fix it, maybe.
