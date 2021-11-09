@@ -1,5 +1,3 @@
-const { NodeIdentifiers } = require('./constants');
-
 class ParseTreeNode {
   constructor(key, value, parent, children = [], isRoot = false) {
     this.key = key;
@@ -13,17 +11,6 @@ class ParseTreeNode {
   get(key, value) {
     let nodeFound = null;
     this.traverse(this, { method: 'dfs', maxDepth: 1 }, (node) => {
-      if (key == NodeIdentifiers.ROOT) {
-        if (this.isRoot) {
-          nodeFound = this;
-          return false;
-        } else if (node.isRoot == true) {
-          nodeFound = node;
-          return false;
-        }
-        return true;
-      }
-
       if (node.key == key && (value ? value == node.value : true)) {
         nodeFound = node;
         return false;
@@ -34,18 +21,17 @@ class ParseTreeNode {
   }
 
   remove(key, value) {
-    this.traverse(this, 'dfs', (node) => {
-      if (node.key == key && (value ? value == node.value : true)) {
-        const nodeIndex = node.parent.children.findIndex(
-          (node) => node.key == key && (value ? value == node.value : true)
-        );
-        if (nodeIndex > -1) {
-          node.parent.children.splice(nodeIndex, 1);
-        }
-        return false;
+    const node = this.get(key, value);
+    if (node) {
+      if (node.isRoot) {
+        throw new Error('Cannot remove root node.');
       }
-      return true;
-    });
+      const nodeIndex = node.parent.children.findIndex(
+        (child) => child.key == key && (value ? value == node.value : true)
+      );
+      node.parent.children.splice(nodeIndex, 1);
+    }
+    return node;
   }
 
   addChild(child) {
@@ -116,8 +102,8 @@ class ParseTreeNode {
     const blockStack = [];
     let lastDepth = -1;
     let pad = '';
-    this.traverse(undefined, 'dfs', (node, depth) => {
-      pad = depth > 0 ? ' '.repeat(depth) : '';
+    this.traverse(undefined, { method: 'dfs' }, (node, depth) => {
+      pad = depth > 1 ? ' '.repeat(depth) : '';
       if (lastDepth != -1 && depth < lastDepth) {
         blockStack.pop();
         str += '\n';
@@ -131,7 +117,7 @@ class ParseTreeNode {
       if (!node.isRoot) {
         str += '\n';
       }
-      str += pad + `${node.key} ${node.value}`;
+      str += pad + node.key + (node.value ? ' ' + node.value : '');
       if (node.isBlock) {
         blockStack.push({ totalLines: node.children.length, currentLine: 0 });
         str += ' {';
@@ -143,7 +129,7 @@ class ParseTreeNode {
     });
     if (blockStack.length) {
       // close the last block
-      str += '\n' + pad.slice(0, pad.length - 1) + '}';
+      str += '\n}';
     }
     return str;
   }
