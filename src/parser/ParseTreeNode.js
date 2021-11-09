@@ -127,9 +127,12 @@ class ParseTreeNode {
         }
       }
     });
-    if (blockStack.length) {
-      // close the last block
-      str += '\n}';
+    // close the last blocks
+    while (blockStack.length) {
+      str += '\n';
+      pad = blockStack.length > 1 ? ' '.repeat(blockStack.length) : '';
+      str += pad + '}';
+      blockStack.pop();
     }
     return str;
   }
