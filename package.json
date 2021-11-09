@@ -13,8 +13,10 @@
   },
   "license": "MIT",
   "devDependencies": {
+    "@types/jest": "^27.0.2",
     "@types/node": "^16.11.6",
     "eslint": "^8.2.0",
+    "eslint-plugin-jest": "^25.2.4",
     "jest": "^27.3.1"
   }
 }
