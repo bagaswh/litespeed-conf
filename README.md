@@ -11,29 +11,57 @@ npm install litespeed-conf
 ```javascript
 const { LiteSpeedConf } = require('litespeed-conf');
 
-const config = `httpdWorkers 1
-user nobody
-group nobody
-priority 0
-cpuAffinity 2
+const config = `docRoot                   $VH_ROOT/client
 
-errorlog $SERVER_ROOT/logs/error.log {
-    logLevel DEBUG
+errorlog /var/log/lsws/vhost_main/error.log {
+  useServer               0
+  logLevel                ERROR
+  rollingSize             10M
+  keepDays                30
+  compressArchive         1
 }
 
-module mod_security {
-    modsecurity on|off
-    modsecurity_rules \`
-        SecRuleEngine On
-        SecRule ARGS "@streq whee" "id:10,phase:2"
-        SecRule ARGS "@streq whee" "id:11,phase:2"
-    \`
-}`;
+accesslog /var/log/lsws/vhost_main/access.log {
+  useServer               0
+  rollingSize             10M
+  keepDays                30
+  compressArchive         1
+}
+
+context /foo {
+  location                $DOC_ROOT/foo/prod
+  allowBrowse             1
+
+  rewrite  {
+    enable                1
+
+  }
+  addDefaultCharset       off
+
+  phpIniOverride  {
+
+  }
+}
+
+rewrite  {
+  enable                  1
+  autoLoadHtaccess        1
+}
+`;
 
 const liteSpeedConf = new LiteSpeedConf(config);
 
-liteSpeedConf.conf.add('rewrite', '', {
-  foo: 'bar',
+liteSpeedConf.conf.add('context', '/baz', {
+  location: '$DOC_ROOT/baz/prod',
+  allowBrowse: 1,
+  rewrite: {
+    enable: 1,
+  },
+  addDefaultCharset: 'off',
+  phpIniOverride: {},
+  nested: {
+    foo: 'baz',
+  },
 });
 
 console.log(liteSpeedConf.toString());
@@ -42,23 +70,46 @@ console.log(liteSpeedConf.toString());
 It will output:
 
 ```
- httpdWorkers 1
- user nobody
- group nobody
- priority 0
- cpuAffinity 2
- errorlog $SERVER_ROOT/logs/error.log {
-  logLevel DEBUG
- }
- module mod_security {
-  modsecurity on|off
-  modsecurity_rules `
-        SecRuleEngine On
-        SecRule ARGS "@streq whee" "id:10,phase:2"
-        SecRule ARGS "@streq whee" "id:11,phase:2"
-    `
- }
- rewrite  {
-  foo bar
- }
+
+docRoot $VH_ROOT/client
+errorlog /var/log/lsws/vhost_main/error.log {
+  useServer 0
+  logLevel ERROR
+  rollingSize 10M
+  keepDays 30
+  compressArchive 1
+}
+accesslog /var/log/lsws/vhost_main/access.log {
+  useServer 0
+  rollingSize 10M
+  keepDays 30
+  compressArchive 1
+}
+context /foo {
+  location $DOC_ROOT/foo/prod
+  allowBrowse 1
+  rewrite {
+   enable 1
+  }
+  addDefaultCharset off
+  phpIniOverride {}
+}
+rewrite {
+  enable 1
+  autoLoadHtaccess 1
+}
+context /baz {
+  location $DOC_ROOT/baz/prod
+  allowBrowse 1
+  rewrite {
+   enable 1
+  }
+  addDefaultCharset off
+  phpIniOverride {}
+  nested {
+   foo baz
+  }
+}
 ```
+
+Yes that newline in the first line is a bug, I think. I'll fix it, I guess.
