@@ -12,7 +12,7 @@ class ParseTreeNode {
 
   get(key, value) {
     let nodeFound = null;
-    this.traverse(this, 'dfs', (node) => {
+    this.traverse(this, { method: 'dfs', maxDepth: 1 }, (node) => {
       if (key == NodeIdentifiers.ROOT) {
         if (this.isRoot) {
           nodeFound = this;
@@ -56,53 +56,57 @@ class ParseTreeNode {
     return child;
   }
 
-  traverseBfs(root, cb) {
+  traverseBfs(root, opts = {}, cb) {
     const queue = [{ node: root || this, depth: 0 }];
     let n;
-
+    const maxDepth = opts.maxDepth || -1;
     while (queue.length > 0) {
       n = queue.shift();
       const cbRet = cb(n.node, n.depth);
       if (cbRet === false) {
         return;
       }
-
       if (!n.node.children) {
         continue;
       }
-
+      if (maxDepth != -1 && n.depth >= maxDepth) {
+        continue;
+      }
       for (let i = 0; i < n.node.children.length; i++) {
         queue.push({ node: n.node.children[i], depth: n.depth + 1 });
       }
     }
   }
 
-  traverseDfs(root, cb) {
+  traverseDfs(root, opts = {}, cb) {
     const stack = [{ node: root || this, depth: 0 }];
     let n;
-
+    const maxDepth = opts.maxDepth || -1;
     while (stack.length > 0) {
       n = stack.pop();
       const cbRet = cb(n.node, n.depth);
       if (cbRet === false) {
         return;
       }
-
       if (!n.node.children) {
         continue;
       }
-
+      if (maxDepth != -1 && n.depth >= maxDepth) {
+        continue;
+      }
       for (var i = n.node.children.length - 1; i >= 0; i--) {
         stack.push({ node: n.node.children[i], depth: n.depth + 1 });
       }
     }
   }
 
-  traverse(root = null, method = 'bfs', cb) {
+  traverse(root = null, opts = {}, cb) {
+    const method = opts.method || 'bfs';
+    const maxDepth = opts.maxDepth || -1;
     if (method == 'bfs') {
-      return this.traverseBfs(root, cb);
+      return this.traverseBfs(root, { maxDepth }, cb);
     } else if (method == 'dfs') {
-      return this.traverseDfs(root, cb);
+      return this.traverseDfs(root, { maxDepth }, cb);
     }
     throw new Error(`Invalid method ${method}.`);
   }
