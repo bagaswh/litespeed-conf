@@ -12,12 +12,19 @@ class Conf {
     return this;
   }
 
-  add(key, value, children) {
-    const block = this.node.addChild(new ParseTreeNode(key, value, this.node));
+  add(key, value, children, parentNode = null) {
+    const node = (parentNode || this.node).addChild(
+      new ParseTreeNode(key, value, this.node)
+    );
     if (isObject(children)) {
       for (const key in children) {
-        block.addChild(new ParseTreeNode(key, children[key], this.node));
+        if (isObject(children[key])) {
+          this.add(key, '', children[key], node);
+        } else {
+          node.addChild(new ParseTreeNode(key, children[key], this.node));
+        }
       }
+      node.isBlock = true;
       return this;
     }
     return this;

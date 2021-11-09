@@ -1,5 +1,4 @@
-const { LiteSpeedConf } = require('../src/conf');
-const { NodeIdentifiers } = require('../src/parser');
+const { LiteSpeedConf } = require('../index');
 
 const config = `docRoot                   $VH_ROOT/client
 
@@ -24,31 +23,31 @@ context /bank-indonesia {
 
   rewrite  {
     enable                1
-  }
 
+  }
   addDefaultCharset       off
 
   phpIniOverride  {
+
   }
 }
 
 rewrite  {
   enable                  1
   autoLoadHtaccess        1
-}`;
+}
+`;
 
-const litespeedConf = new LiteSpeedConf(config);
+const liteSpeedConf = new LiteSpeedConf(config);
 
-let conf = litespeedConf.conf;
-conf.add('foo', 'bar');
-conf.add('me', 'and who');
-conf.add('something', 'in the matter', {
-  key: 'apa',
-  foo: 'bar',
-  oke: 'bange',
+liteSpeedConf.conf.add('context', '/lgi', {
+  location: '$DOC_ROOT/bank-indonesia/prod',
+  allowBrowse: 1,
+  rewrite: {
+    enable: 1,
+  },
+  addDefaultCharset: 'off',
+  phpIniOverride: {},
 });
-conf.add('nonsens', 'just non sense');
 
-// console.log();
-const parsedToString = litespeedConf.toString();
-console.log(parsedToString);
+console.log(liteSpeedConf.toString());
