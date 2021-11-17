@@ -113,3 +113,98 @@ context /baz {
 ```
 
 Yes that newline in the first line is a bug. I'll fix it, maybe.
+
+## Add node
+
+### Add key value pair
+
+```javascript
+liteSpeedConf.conf.add('foo', 'bar');
+```
+
+This new line will be added in the config string:
+
+```
+foo bar
+```
+
+### Add new block
+
+```javascript
+liteSpeedConf.conf.add('context', '/foo', {
+  rewrite: {
+    enable: 1,
+  },
+  phpIniOverride: {},
+});
+```
+
+This new block will be added in the config string:
+
+```
+context /foo {
+  rewrite {
+    enable 1
+  }
+  phpIniOverride {}
+}
+```
+
+## Set node value
+
+You can set a value of a node by using `set` on a target node.
+
+Config:
+
+```
+context /foo {
+  rewrite {
+    enable 1
+  }
+  phpIniOverride {}
+}
+```
+
+We can set the inner `enbale` by writing:
+
+```javascript
+liteSpeedConf.conf.get('context').get('rewrite').get('enable').set('0');
+```
+
+The config will look like this:
+
+```
+context /foo {
+  rewrite {
+    enable 0
+  }
+  phpIniOverride {}
+}
+```
+
+## Remove node
+
+Config:
+
+```
+context /foo {
+  rewrite {
+    enable 1
+  }
+  phpIniOverride {}
+}
+```
+
+```javascript
+liteSpeedConf.conf.get('context').remove('phpIniOverride');
+```
+
+Output:
+
+```
+context /foo {
+  rewrite {
+    enable 1
+  }
+}
+```
