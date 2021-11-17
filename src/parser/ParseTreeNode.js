@@ -103,16 +103,24 @@ class ParseTreeNode {
     let lastDepth = -1;
     let pad = '';
     this.traverse(undefined, { method: 'dfs' }, (node, depth) => {
-      pad = depth > 1 ? ' '.repeat(depth) : '';
-      if (lastDepth != -1 && depth < lastDepth) {
-        stackLength--;
-        str += '\n';
-        str += pad + '}';
+      // handle "node jump"
+      let depthDiff = depth < lastDepth ? Math.abs(depth - lastDepth) : 0;
+      if (lastDepth != -1 && depthDiff > 0) {
+        while (depthDiff--) {
+          pad = stackLength > 1 ? ' '.repeat(stackLength) : '';
+          stackLength--;
+          str += '\n';
+          str += pad + '}';
+        }
       }
+
       lastDepth = depth;
+
       if (!node.isRoot) {
         str += '\n';
       }
+
+      pad = depth > 1 ? ' '.repeat(depth) : '';
       str += pad + node.key + (node.value ? ' ' + node.value : '');
       if (node.isBlock) {
         stackLength++;
@@ -123,6 +131,7 @@ class ParseTreeNode {
         }
       }
     });
+
     // close the last blocks
     while (stackLength > 0) {
       str += '\n';
