@@ -6,9 +6,20 @@ class Conf {
     this.node = node;
   }
 
-  update(key, value) {
-    const node = this.node.get(key);
-    node.value = value;
+  get(key, value) {
+    const node = this.node.get(key, value);
+    if (node !== null) {
+      return new Conf(node);
+    }
+    return null;
+  }
+
+  update(nodeTarget, updatedValue) {
+    const node = this.node.get(nodeTarget.key, nodeTarget.value);
+    if (!node) {
+      throw new Error('Node not found.');
+    }
+    node.value = updatedValue;
     return this;
   }
 
@@ -32,6 +43,7 @@ class Conf {
 
   remove(key, value) {
     this.node.remove(key, value);
+    return this;
   }
 }
 
