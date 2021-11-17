@@ -88,7 +88,7 @@ class LiteSpeedConfigParser {
     let word = '';
     const terminationTokens = ['`', ' ', '{', '}', '\n', '\r'];
     word += this.readUntil(terminationTokens);
-    if (!word.trim().length) {
+    if (!word.trim().length && this.index < this.source.length) {
       return this.readWord();
     }
     const last = word[word.length - 1];
