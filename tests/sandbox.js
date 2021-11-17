@@ -53,7 +53,7 @@ liteSpeedConf.conf.add('context', '/baz', {
   },
 });
 
-const rewriteConf = liteSpeedConf.getConf('rewrite');
-rewriteConf.update({ key: 'enable' }, '0');
+const rewriteConf = liteSpeedConf.getConf('rewrite').get('enable');
+rewriteConf.update(null, 'something');
 
 console.log(liteSpeedConf.toString());
