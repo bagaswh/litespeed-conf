@@ -11,7 +11,10 @@ class ParseTreeNode {
   get(key, value) {
     let nodeFound = null;
     this.traverse(this, { method: 'dfs', maxDepth: 1 }, (node) => {
-      if (node.key == key && (value ? value == node.value : true)) {
+      if (
+        node.key.toLowerCase() == key.toLowerCase() &&
+        (value ? value == node.value : true)
+      ) {
         nodeFound = node;
         return false;
       }
