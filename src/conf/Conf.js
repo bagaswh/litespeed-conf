@@ -23,7 +23,9 @@ class Conf {
   }
 
   set(value) {
-    this.node.value = value;
+    if (!this.node.isRoot) {
+      this.node.value = value;
+    }
   }
 
   add(key, value, children, parentNode = null) {
