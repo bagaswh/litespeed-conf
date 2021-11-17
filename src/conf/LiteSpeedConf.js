@@ -14,11 +14,7 @@ class LiteSpeedConf {
   }
 
   getConf(key, value) {
-    const node = this.tree.get(key, value);
-    if (node !== null) {
-      return new Conf(node);
-    }
-    return null;
+    return this.conf.get(key, value);
   }
 
   toString() {
