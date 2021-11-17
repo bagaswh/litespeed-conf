@@ -1,6 +1,6 @@
 {
   "name": "litespeed-conf",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Module for interacting with LiteSpeed config file",
   "main": "index.js",
   "scripts": {
