@@ -165,7 +165,7 @@ context /foo {
 }
 ```
 
-We can set the inner `enbale` by writing:
+We can set the inner `enable` by writing:
 
 ```javascript
 liteSpeedConf.conf.get('context').get('rewrite').get('enable').set('0');
@@ -212,7 +212,7 @@ context /foo {
 You can remove the referenced node by:
 
 ```javascript
-liteSpeedConf.conf.get('context').get('context').remove();
+liteSpeedConf.conf.get('context').get('rewrite').remove();
 ```
 
 This will remove `rewrite` inside context.
