@@ -55,7 +55,7 @@ class ParseTreeNode {
       if (!n.node.children) {
         continue;
       }
-      if (maxDepth != -1 && n.depth >= maxDepth) {
+      if (maxDepth > -1 && n.depth >= maxDepth) {
         continue;
       }
       for (let i = 0; i < n.node.children.length; i++) {
@@ -77,7 +77,7 @@ class ParseTreeNode {
       if (!n.node.children) {
         continue;
       }
-      if (maxDepth != -1 && n.depth >= maxDepth) {
+      if (maxDepth > -1 && n.depth >= maxDepth) {
         continue;
       }
       for (var i = n.node.children.length - 1; i >= 0; i--) {
