@@ -49,9 +49,9 @@ rewrite  {
 }
 `;
 
-const liteSpeedConf = new LiteSpeedConf(config);
+const litespeed = new LiteSpeedConf(config);
 
-liteSpeedConf.conf.add('context', '/baz', {
+litespeed.conf.add('context', '/baz', {
   location: '$DOC_ROOT/baz/prod',
   allowBrowse: 1,
   rewrite: {
@@ -64,7 +64,7 @@ liteSpeedConf.conf.add('context', '/baz', {
   },
 });
 
-console.log(liteSpeedConf.toString());
+console.log(litespeed.toString());
 ```
 
 It will output:
@@ -119,7 +119,7 @@ Yes that newline in the first line is a bug. I'll fix it, maybe.
 ### Add key value pair
 
 ```javascript
-liteSpeedConf.conf.add('foo', 'bar');
+litespeed.conf.add('foo', 'bar');
 ```
 
 This new line will be added in the config string:
@@ -131,7 +131,7 @@ foo bar
 ### Add new block
 
 ```javascript
-liteSpeedConf.conf.add('context', '/foo', {
+litespeed.conf.add('context', '/foo', {
   rewrite: {
     enable: 1,
   },
@@ -152,7 +152,7 @@ context /foo {
 
 ## Set node value
 
-You can set a value of a node by using `set` on a target node.
+You can set the value of a node by using `set`.
 
 Config:
 
@@ -168,7 +168,7 @@ context /foo {
 We can set the inner `enable` by writing:
 
 ```javascript
-liteSpeedConf.conf.get('context').get('rewrite').get('enable').set('0');
+litespeed.conf.get('context').get('rewrite').get('enable').set('0');
 ```
 
 The config will look like this:
@@ -196,7 +196,7 @@ context /foo {
 ```
 
 ```javascript
-liteSpeedConf.conf.get('context').remove('phpIniOverride');
+litespeed.conf.get('context').remove('phpIniOverride');
 ```
 
 Output:
@@ -212,7 +212,7 @@ context /foo {
 You can remove the referenced node by:
 
 ```javascript
-liteSpeedConf.conf.get('context').get('rewrite').remove();
+litespeed.conf.get('context').get('rewrite').remove();
 ```
 
 This will remove `rewrite` inside context.
