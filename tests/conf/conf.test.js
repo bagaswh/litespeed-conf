@@ -65,6 +65,9 @@ describe('Conf', () => {
     expect(
       liteSpeedConf.conf.get('context', '/wus-wus').get('foo').getValue()
     ).toBe('bar');
+
+    liteSpeedConf.conf.get('context', '/wus-wus').remove();
+    expect(liteSpeedConf.conf.get('context', '/wus-wus')).toBe(null);
   });
 
   test('toString', () => {

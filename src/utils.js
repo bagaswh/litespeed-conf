@@ -8,3 +8,7 @@ module.exports.toArray = function toArray(thing) {
   }
   return [thing];
 };
+
+module.exports.isNullOrUndefined = function isNullOrUndefined(thing) {
+  return thing === null || thing === undefined;
+};

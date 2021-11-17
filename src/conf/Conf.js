@@ -1,5 +1,5 @@
 const { ParseTreeNode } = require('../parser');
-const { isObject } = require('../utils');
+const { isObject, isNullOrUndefined } = require('../utils');
 
 class Conf {
   constructor(node) {
@@ -47,6 +47,11 @@ class Conf {
   }
 
   remove(key, value) {
+    if (isNullOrUndefined(key) && isNullOrUndefined(value)) {
+      this.node.parent?.remove(this.node.key, this.node.value);
+      return this;
+    }
+
     this.node.remove(key, value);
     return this;
   }
