@@ -49,6 +49,22 @@ describe('Conf', () => {
 
     liteSpeedConf.conf.remove('foo');
     expect(liteSpeedConf.conf.get('foo')).toBe(null);
+
+    liteSpeedConf.conf.add('context', '/wus-wus', {
+      foo: 'bar',
+      qux: {
+        baz: 'perpendicular',
+        teaching: {
+          meme: 'multiple',
+        },
+      },
+    });
+
+    liteSpeedConf.conf.get('context', '/wus-wus').remove('qux');
+    expect(liteSpeedConf.conf.get('context', '/wus-wus').get('qux')).toBe(null);
+    expect(
+      liteSpeedConf.conf.get('context', '/wus-wus').get('foo').getValue()
+    ).toBe('bar');
   });
 
   test('toString', () => {
