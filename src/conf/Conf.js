@@ -15,6 +15,15 @@ class Conf {
   }
 
   update(nodeTarget, updatedValue) {
+    if (!nodeTarget?.key && this.node.isBlock) {
+      throw new Error('This node is a block. Key needs to be specified.');
+    }
+
+    if (!nodeTarget?.key && !this.node.isBlock) {
+      this.node.value = updatedValue;
+      return this;
+    }
+
     const node = this.node.get(nodeTarget.key, nodeTarget.value);
     if (!node) {
       throw new Error('Node not found.');
