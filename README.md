@@ -208,3 +208,11 @@ context /foo {
   }
 }
 ```
+
+You can remove the referenced node by:
+
+```javascript
+liteSpeedConf.conf.get('context').get('context').remove();
+```
+
+This will remove `rewrite` inside context.
