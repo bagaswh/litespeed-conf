@@ -1,4 +1,6 @@
-module.exports.config1 = `docRoot                   $VH_ROOT/client
+module.exports.config1 = `
+serverName  
+docRoot                   $VH_ROOT/client
 errorlog /var/log/lsws/vhost_main/error.log {
   useServer               0
   logLevel                ERROR
@@ -39,7 +41,7 @@ context /lgi {
   phpIniOverride  {}
 }
 
-rewrite  {
+rewrite             {
   enable                  1
   autoLoadHtaccess        1
 }`;

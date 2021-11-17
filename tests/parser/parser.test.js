@@ -29,6 +29,7 @@ describe('ParseTreeNode', () => {
   test('to string', () => {
     expect(tree.toString()).toBe(
       `
+serverName
 docRoot $VH_ROOT/client
 errorlog /var/log/lsws/vhost_main/error.log {
   useServer 0
