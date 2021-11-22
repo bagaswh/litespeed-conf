@@ -1,4 +1,4 @@
-const { LiteSpeedConfigParser } = require('../..');
+const { LiteSpeedConfigParser, LiteSpeedConf } = require('../..');
 const { config1 } = require('../common');
 
 const tree = new LiteSpeedConfigParser(config1).parse();
@@ -57,6 +57,43 @@ rewrite {
   enable 1
   autoLoadHtaccess 1
 }`
+    );
+  });
+});
+
+describe('Parser', () => {
+  test('multiline value', () => {
+    const conf = `rewrite  {
+  enable                  1
+  autoLoadHtaccess        1
+  rules                   <<<END_rules
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} =http
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+<IfModule LiteSpeed>
+ForceSecureCookie secure same_site_none
+CacheEngine on
+CacheLookup public on
+</IfModule>
+  END_rules
+}
+`;
+    const litespeed = new LiteSpeedConf(conf);
+    expect(litespeed.conf.get('rewrite').get('rules').getValue()).toBe(
+      `<<<END_rules
+RewriteEngine On
+RewriteCond %{HTTPS} off
+RewriteCond %{HTTP:X-Forwarded-Proto} =http
+RewriteRule (.*) https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+<IfModule LiteSpeed>
+ForceSecureCookie secure same_site_none
+CacheEngine on
+CacheLookup public on
+</IfModule>
+  END_rules`
     );
   });
 });

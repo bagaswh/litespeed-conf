@@ -88,6 +88,17 @@ class LiteSpeedConfigParser {
     let word = '';
     const terminationTokens = ['`', ' ', '{', '}', '\n', '\r'];
     word += this.readUntil(terminationTokens);
+
+    let endRulesMultilineValue = '';
+    if (word.trim().match(/<<<END_rules/)) {
+      // read until END_rules
+      while (!endRulesMultilineValue.match(/END_rules/)) {
+        endRulesMultilineValue += this.source[this.index];
+        this.index++;
+      }
+      word += endRulesMultilineValue;
+    }
+
     const last = word[word.length - 1];
     if (terminationTokens.slice(2).includes(last)) {
       word = word.slice(0, word.length - 1);
