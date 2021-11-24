@@ -10,7 +10,7 @@ class ParseTreeNode {
 
   get(key, value) {
     let nodeFound = null;
-    this.traverse(this, { method: 'dfs', maxDepth: 1 }, (node) => {
+    this.traverse(this, { method: 'bfs', maxDepth: 1 }, (node) => {
       if (
         node.key.toLowerCase() == key.toLowerCase() &&
         (value ? value == node.value : true)
@@ -30,7 +30,7 @@ class ParseTreeNode {
         throw new Error('Cannot remove root node.');
       }
       const nodeIndex = node.parent.children.findIndex(
-        (child) => child.key == key && (value ? value == node.value : true)
+        (child) => child.key == key && (value ? value == child.value : true)
       );
       node.parent.children.splice(nodeIndex, 1);
     }
