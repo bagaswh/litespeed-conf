@@ -40,13 +40,17 @@ class LiteSpeedConfigParser {
       this.context = new ParseTreeNode('', '', this.context.parent.parent);
       this.index++;
     } else {
-      const word = this.readWord();
-      if (!word.length) {
-        return;
-      }
       if (!this.context.key) {
+        const word = this.readWord({ ignoreWhiteSpace: false });
+        if (!word.length) {
+          return;
+        }
         this.context.key = word;
       } else {
+        const word = this.readWord({ ignoreWhiteSpace: true });
+        if (!word.length) {
+          return;
+        }
         this.context.value += word;
       }
     }
@@ -84,10 +88,12 @@ class LiteSpeedConfigParser {
     this.index++;
   }
 
-  readWord() {
+  readWord(opts = { ignoreWhiteSpace: false }) {
     let word = '';
-    const terminationTokens = ['`', ' ', '{', '}', '\n', '\r'];
-    word += this.readUntil(terminationTokens);
+    const terminationTokens = [' ', '`', '{', '}', '\n', '\r'];
+    word += this.readUntil(
+      terminationTokens.slice(opts.ignoreWhiteSpace ? 1 : 0)
+    );
 
     let endRulesMultilineValue = '';
     if (word.trim().match(/<<<END_rules/)) {
