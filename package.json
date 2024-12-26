@@ -1,0 +1,22 @@
+{
+  "name": "litespeed-conf",
+  "version": "2.0.7",
+  "description": "Module for interacting with LiteSpeed config file",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": {
+    "email": "bagaswh@protonmail.com",
+    "name": "Bagas Wahyu Hidayah",
+    "url": "https://github.com/bagaswh/litespeed-conf"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^27.0.2",
+    "@types/node": "^16.11.6",
+    "eslint": "^8.2.0",
+    "eslint-plugin-jest": "^25.2.4",
+    "jest": "^27.3.1"
+  }
+}
